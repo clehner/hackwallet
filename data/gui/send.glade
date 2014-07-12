@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Generated with glade 3.18.3 
 
-Copyright (C) Copyright (c) 2014 Charles Lehner
+Copyright (C) 2014 Charles Lehner
 
 This file is part of HackWallet.
 
@@ -26,7 +26,7 @@ Author: Charles Lehner
   <!-- interface-license-type gplv3 -->
   <!-- interface-name HackWallet -->
   <!-- interface-description Send dialog for HackWallet -->
-  <!-- interface-copyright Copyright (c) 2014 Charles Lehner -->
+  <!-- interface-copyright 2014 Charles Lehner -->
   <!-- interface-authors Charles Lehner -->
   <object class="GtkDialog" id="dialog">
     <property name="can_focus">False</property>
