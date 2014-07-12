@@ -2,6 +2,11 @@
 #include <signal.h>
 #include <gtk/gtk.h>
 
+struct menuThing {
+    const char *mnemonic;
+    void (*handler) (GtkMenuItem *menuItem, gpointer userData);
+};
+
 GtkStatusIcon *statusIcon;
 GtkWidget *menu;
 
@@ -21,10 +26,25 @@ static gboolean status_icon_on_button_press(GtkStatusIcon * status_icon,
     return TRUE;
 }
 
-static void menu_thing_on_activate(GtkMenuItem * menuitem, gpointer user_data)
+static void menu_on_send(GtkMenuItem * menuItem, gpointer userData)
 {
-    printf("hi\n");
+    printf("send\n");
 }
+
+static void menu_on_receive(GtkMenuItem * menuItem, gpointer userData)
+{
+    printf("receive\n");
+}
+
+#define SEPARATOR {NULL, _separator}
+static void _separator() {};
+
+static struct menuThing menuThings[] = {
+    {"_Send", menu_on_send},
+    {"_Receive", menu_on_receive},
+    SEPARATOR,
+    NULL
+};
 
 int main(int argc, char *argv[]) {
 	// Initialize gtk with arguments
@@ -51,15 +71,18 @@ int main(int argc, char *argv[]) {
 		G_CALLBACK(status_icon_on_button_press), NULL);
 
     // Add things to menu
-
-	GtkWidget *thing = gtk_menu_item_new_with_mnemonic("_Hello world");
-	GtkWidget *separator1 = gtk_separator_menu_item_new();
-
-	g_signal_connect(G_OBJECT(thing), "activate",
-		G_CALLBACK(menu_thing_on_activate), NULL);
-
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu), thing);
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu), separator1);
+    struct menuThing *menuThing;
+    for (menuThing = menuThings; menuThing->handler; menuThing++) {
+        GtkWidget *item;
+        if (menuThing->handler == _separator) {
+            item = gtk_separator_menu_item_new();
+        } else {
+            item = gtk_menu_item_new_with_mnemonic(menuThing->mnemonic);
+            g_signal_connect(G_OBJECT(item), "activate",
+                G_CALLBACK(menuThing->handler), NULL);
+        }
+        gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+    }
 
     // Let's go
     gtk_main();
