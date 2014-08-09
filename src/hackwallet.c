@@ -19,6 +19,7 @@
 struct menuThing {
     const char *mnemonic;
     void (*handler) (GtkMenuItem *menuItem, gpointer userData);
+    struct menuThing *submenu;
 };
 
 typedef struct
@@ -171,27 +172,35 @@ static void menu_on_about(GtkMenuItem * menuItem, gpointer userData)
     gtk_widget_destroy(aboutDialog);
 }
 
-#define SEPARATOR {(char *)_separator, NULL}
+#define SEPARATOR {(char *)_separator, NULL, NULL}
 #define IS_SEPARATOR(thing) ((char *)_separator == thing->mnemonic)
 static void _separator() {};
+
+static struct menuThing networkMenu[] = {
+    {"_Status: "},
+    {"_Peers: "},
+    {"_Block height: "},
+    NULL
+};
 
 static struct menuThing appMenuSpec[] = {
     {"_Send", menu_on_send},
     {"_Receive", menu_on_receive},
     SEPARATOR,
     {"_History", NULL},
+    {"_Network", NULL, networkMenu},
     NULL
 };
 
 static struct menuThing settingsMenuSpec[] = {
-    {"_About", menu_on_about},
+    {"_About", menu_on_about, NULL},
     SEPARATOR,
-    {"_Quit", menu_on_quit},
+    {"_Quit", menu_on_quit, NULL},
     NULL
 };
 
 GtkWidget *buildMenu(struct menuThing *spec) {
-    // Set up menus
+    // Set up menu
     GtkWidget *menu = gtk_menu_new();
 
     // Add things to menu
@@ -202,9 +211,15 @@ GtkWidget *buildMenu(struct menuThing *spec) {
             item = gtk_separator_menu_item_new();
         } else {
             item = gtk_menu_item_new_with_mnemonic(_(menuThing->mnemonic));
+            // Add signal handlers
             if (menuThing->handler) {
                 g_signal_connect(G_OBJECT(item), "activate",
                     G_CALLBACK(menuThing->handler), NULL);
+            }
+            // Hook up submenu
+            if (menuThing->submenu) {
+                GtkWidget *submenu = buildMenu(menuThing->submenu);
+                gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
             }
         }
         gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
