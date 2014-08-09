@@ -18,8 +18,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with HackWallet.  If not, see <http://www.gnu.org/licenses/>.
 
-Author: Charles Lehner
-
 -->
 <interface>
   <requires lib="gtk+" version="3.12"/>
@@ -27,10 +25,8 @@ Author: Charles Lehner
   <!-- interface-name HackWallet -->
   <!-- interface-description Send dialog for HackWallet -->
   <!-- interface-copyright 2014 Charles Lehner -->
-  <!-- interface-authors Charles Lehner -->
   <object class="GtkDialog" id="dialog">
     <property name="can_focus">False</property>
-    <property name="tooltip_text" translatable="yes">Send coin</property>
     <property name="title" translatable="yes">Send coin</property>
     <property name="icon_name">applications-graphics</property>
     <property name="type_hint">dialog</property>
@@ -122,6 +118,7 @@ Author: Charles Lehner
               <object class="GtkEntry" id="description">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="tooltip_text" translatable="yes">Transaction note, for your records (not sent to the network)</property>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -143,6 +140,8 @@ Author: Charles Lehner
               <object class="GtkEntry" id="address">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="tooltip_text" translatable="yes">Bitcoin address to sent payment to</property>
+                <property name="shadow_type">etched-in</property>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -158,6 +157,7 @@ Author: Charles Lehner
                   <object class="GtkEntry" id="amount">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="tooltip_text" translatable="yes">Amount of bitcoin to send</property>
                     <property name="input_purpose">number</property>
                   </object>
                   <packing>
@@ -203,6 +203,7 @@ Author: Charles Lehner
                   <object class="GtkEntry" id="fee">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="tooltip_text" translatable="yes">Fee to include for miners to secure the network and ensure your transaction gets confirmed quickly</property>
                   </object>
                   <packing>
                     <property name="left_attach">0</property>

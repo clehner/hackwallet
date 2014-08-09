@@ -58,6 +58,22 @@ static void send_cancel_button_clicked(GtkWidget * widget,
     gtk_widget_destroy(sendGui->dialog);
 }
 
+static void send_button_clicked(GtkWidget * widget,
+    gpointer user_data)
+{
+    // Disable send button while we send the transaction
+    gtk_widget_set_sensitive(GTK_WIDGET(sendGui->send_button), FALSE);
+
+    const char *amount = gtk_entry_get_text(sendGui->address_entry);
+    const char *address = gtk_entry_get_text(sendGui->address_entry);
+    const char *fee = gtk_entry_get_text(sendGui->fee_entry);
+    const char *desc = gtk_entry_get_text(sendGui->description_entry);
+    g_print("Description: %s\n", desc);
+    g_print("Amount: %s BTC\n", amount);
+    g_print("Address: %s BTC\n", address);
+    g_print("Fee: %s BTC\n\n", fee);
+}
+
 // Status menu handlers
 
 static void status_icon_on_popup_menu(GtkStatusIcon * status_icon, guint button,
@@ -90,12 +106,14 @@ static gboolean status_icon_on_button_press(GtkStatusIcon * status_icon,
 
 static void menu_on_send(GtkMenuItem * menuItem, gpointer userData)
 {
-    // Create window with send form
+    // Show send dialog
+
     if (sendGui) {
         gtk_window_present(GTK_WINDOW(sendGui->dialog));
         return;
     }
 
+    // Create dialog
     sendGui = (SendGui *)g_malloc(sizeof *sendGui);
 
     GtkBuilder *builder = gtk_builder_new();
@@ -108,13 +126,11 @@ static void menu_on_send(GtkMenuItem * menuItem, gpointer userData)
     sendGui->amount_entry = GTK_ENTRY(getobj("amount"));
     sendGui->description_entry = GTK_ENTRY(getobj("description"));
     sendGui->fee_entry = GTK_ENTRY(getobj("fee"));
-    sendGui->cancel_button = GTK_BUTTON(getobj("close"));
+    sendGui->cancel_button = GTK_BUTTON(getobj("cancel"));
     sendGui->send_button = GTK_BUTTON(getobj("send"));
     #undef getobj
 
     g_object_unref(G_OBJECT(builder));
-
-    //gtk_window_set_default_icon_from_file(APP_ICON, NULL);
 
     // Connect signals
     g_signal_connect(G_OBJECT(sendGui->dialog), "destroy", G_CALLBACK(
@@ -123,8 +139,11 @@ static void menu_on_send(GtkMenuItem * menuItem, gpointer userData)
         send_dialog_delete_event), NULL);
     g_signal_connect(G_OBJECT(sendGui->cancel_button), "clicked", G_CALLBACK(
         send_cancel_button_clicked), NULL);
+    g_signal_connect(G_OBJECT(sendGui->send_button), "clicked", G_CALLBACK(
+        send_button_clicked), NULL);
 
-    //gtk_window_set_modal(GTK_WINDOW(sendGui->dialog), TRUE);
+    gtk_entry_set_text(sendGui->fee_entry, DEFAULT_FEE);
+
     gtk_widget_show_all(sendGui->dialog);
 }
 
